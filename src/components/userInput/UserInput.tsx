@@ -20,45 +20,42 @@ function UserData(){
         "cpf": userCpfInput.value.toString(),
         "email": userEmailInput.value.toString(),
         "address": userAddressInput.value.toString()
+        
     }
 
-    newDiv.innerHTML = `
-    <div>
-        Nome: ${userNameInput.value}
-    </div>
-    <div>
-        Sobrenome: ${userLastNameInput.value}
-    </div>
-    <div>
-        Telefone: ${userPhoneNumberInput.value}
-    </div>
-    <div>
-        Endereço: ${userAddressInput.value}
-    </div>
-    <div>
-        Email: ${userEmailInput.value}
-    </div>
-    <div>
-        Cpf: ${userCpfInput.value}
-    </div>
-    `
+    
 
-    axios.post(salesPersonUrl, userDataJson)
-    .then((response) =>{
-        newDiv.innerHTML = `${response.data}`
-    }
-    )
+    axios.get(salesPersonUrl)
+    .then((response) => {
 
-    axios.get(salesPersonUrl,
-        {
-             headers:{
-                "Acess-Control-Allow-Origin":"*",
-                "Content-type":"application/json"
-            }
-    }
 
-        ).then((response) => {
-        newDiv.innerHTML = `${response.data}`
+        var teste = response.data;
+        
+        console.log(teste.map((resposta: any) =>
+                { const {name} = resposta;
+                }))
+
+
+            newDiv.innerHTML = `
+            <div>
+                Nome: ${Object.keys(response.data)[2]}
+            </div>
+            <div>
+                Sobrenome: ${response.data.lastName}
+            </div>
+            <div>
+                Telefone: ${response.data.phoneNumber}
+            </div>
+            <div>
+                Endereço: ${response.data.address}
+            </div>
+            <div>
+                Email: ${response.data.email}
+            </div>
+            <div>
+                Cpf: ${response.data.cpf}
+            </div>
+            `
     })
 }
 
@@ -91,7 +88,7 @@ function UserInput(){
                 <label>CPF: </label>
                 <input type = "text" id = "userCpf"/>
             </div>
-            <button type = "submit" id="sendBtn" onClick={UserData}>Enviar</button>
+            <button type = "submit" id="sendBtn" onClick={UserData}>Obter</button>
             <div id = "newDiv"></div>
         </div>
     );
