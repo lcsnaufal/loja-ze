@@ -1,7 +1,8 @@
 import React from "react";
 import "./UserInput.css";
 import axios from "axios";
-function UserData(){
+
+async function UserDataGet(){
 
     var userNameInput = document.getElementById("userName")  as HTMLInputElement || null;
     var userLastNameInput = document.getElementById("userLastName")  as HTMLInputElement || null;
@@ -9,7 +10,6 @@ function UserData(){
     var userAddressInput = document.getElementById("userAddress") as HTMLInputElement || null;
     var userEmailInput = document.getElementById("userEmail")  as HTMLInputElement || null;
     var userCpfInput = document.getElementById("userCpf")  as HTMLInputElement || null;
-    var newDiv = document.getElementById("newDiv") as HTMLDivElement;
     var salesPersonUrl = "http://localhost:3001/api/vendedor";
     
     var userDataJson = {
@@ -25,37 +25,87 @@ function UserData(){
 
     
 
-    axios.get(salesPersonUrl)
+    await axios.get(salesPersonUrl)
     .then((response) => {
 
 
-        var teste = response.data;
+        const dataSalesPerson: Record<string, {name: string, lastName: string,
+        phoneNumber: string,
+        cpf: string,
+        email: string,
+        address: string}> = response.data;
+
+        const dataSalesPersonArray = Object.entries(dataSalesPerson).map(
+            ([key,value]) => ({
+                key,
+                ...value
+            }))
+
+            console.log(dataSalesPersonArray[1]);
+
+            dataSalesPersonArray.forEach((i) => {
+                
+                const newDiv = document.createElement("div");
+
+                newDiv.innerHTML = `
+            <div>
+                Nome: ${i.name} 
+            </div>
+            <div>
+                Sobrenome: ${i.lastName}
+            </div>
+            <div>
+                Telefone: ${i.phoneNumber}
+            </div>
+            <div>
+                Endereço: ${i.address}
+            </div>
+            <div>
+                Email: ${i.email}
+            </div>
+            <div>
+                Cpf: ${i.cpf}
+            </div>
+            <br/><br/> , 
+            `;
+
+            document.body.appendChild(newDiv);
+            })
+
+        // var teste = response.data;
         
-        console.log(teste.map((resposta: any) =>
-                { const {name} = resposta;
-                }))
+        // console.log(teste.map((resposta: any) =>
+        //         { const {name} = resposta;
+        //         }))
 
 
-            newDiv.innerHTML = `
-            <div>
-                Nome: ${Object.keys(response.data)[2]}
-            </div>
-            <div>
-                Sobrenome: ${response.data.lastName}
-            </div>
-            <div>
-                Telefone: ${response.data.phoneNumber}
-            </div>
-            <div>
-                Endereço: ${response.data.address}
-            </div>
-            <div>
-                Email: ${response.data.email}
-            </div>
-            <div>
-                Cpf: ${response.data.cpf}
-            </div>
-            `
+            
+    })
+}
+
+async function UserDataPost(){
+
+    var salesPersonUrl = "http://localhost:3001/api/vendedor";
+
+
+    var salesPersonJson = {
+            "name":"pedro",
+            "lastName":"dwadwa",
+            "address":"alto",
+            "email":"dwa@gmal",
+            "phoneNumber":"123456",
+            "cpf":"321.321.321-32"
+    }
+
+
+    await axios.post(salesPersonUrl, salesPersonJson,
+        {
+            headers : {
+                "Content-Type":"application/json",
+            }
+        })
+    .then((response) =>{
+        console.log(response)
     })
 }
 
@@ -88,8 +138,8 @@ function UserInput(){
                 <label>CPF: </label>
                 <input type = "text" id = "userCpf"/>
             </div>
-            <button type = "submit" id="sendBtn" onClick={UserData}>Obter</button>
-            <div id = "newDiv"></div>
+            <button type = "submit" id="sendBtn" onClick={UserDataGet}>Get</button>
+            <button type = "submit" id="sendBtnPost" onClick={UserDataPost}>Post</button>
         </div>
     );
 };
